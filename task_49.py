@@ -32,14 +32,24 @@ def get_info():
         try:
             first_name = input('Введите имя: ')
             if len(first_name) < 2:
-                raise NameError('Имя должнро быть больше 1 символа!')
+                raise NameError('Имя должно содержать больше 1 символа!')
             else:
                 is_valid_first_name = True
         except NameError as err:
             print(err)
             continue
 
-    second_name = 'Иванов'
+    is_valid_second_name = False
+    while not is_valid_second_name:
+        try:
+            second_name = input('Введите фамилию: ')
+            if len(second_name) < 2:
+                raise NameError('Фамилия должна содержать больше 1 символа!')
+            else:
+                is_valid_second_name = True
+        except NameError as err:
+            print(err)
+            continue
 
     is_valid_phone = False
     while not is_valid_phone:
@@ -86,6 +96,7 @@ def write_file(file_name, lst):
         f_writer.writerows(res)
 
 file_name = 'phone.csv'
+new_file = 'new_phone.csv'
 
 def main():
     while True:
@@ -101,6 +112,24 @@ def main():
                 print('Файл отсутствует, создайте его')
                 continue
             print(read_file(file_name))
+        elif command == 'c':
+            if not exists(file_name):
+                print('Отсутствует основной файл, создайте его!')
+                continue
+            line_number = int(input('Введите номер строки: '))
+            copy_data(file_name, new_file, line_number)
+
+
+def copy_data(file_name, new_file, line_number):
+    if line_number < 1 or line_number > len(read_file(file_name)):
+        print('Некорректный номер строки!')
+        return
+    copy_obj = read_file(file_name)[line_number - 1]
+    create_file(new_file)
+    with open(new_file, 'w', encoding='utf-8', newline='') as data:
+        f_writer = DictWriter(data, fieldnames=['Имя', 'Фамилия', 'Телефон'])
+        f_writer.writeheader()
+        f_writer.writerow(copy_obj)
+
 
 main()
-
